@@ -6,6 +6,12 @@ let isConnected = false;
 // Ensure environment variables are loaded if available locally, though Vercel injects them
 const mongoUri = process.env.MONGO_URI;
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export default async function handler(req, res) {
   if (!isConnected) {
     if (!mongoUri) {

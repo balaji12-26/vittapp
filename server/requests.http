@@ -1,0 +1,87 @@
+# EventEase API — scratch requests.
+# VS Code REST Client / JetBrains HTTP Client. Run from top to bottom.
+
+@host = http://localhost:5000/api
+
+### Health
+GET {{host}}/health
+
+### Sign up as an attendee
+# @name signupAttendee
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Ananya Rao",
+  "email": "ananya@example.com",
+  "password": "orchestra-pit-4",
+  "role": "attendee"
+}
+
+@attendeeToken = {{signupAttendee.response.body.token}}
+
+### Sign up as an organizer
+# @name signupOrganizer
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Sunbeam Live",
+  "email": "hello@sunbeamlive.in",
+  "password": "front-of-house-9",
+  "role": "organizer"
+}
+
+@organizerToken = {{signupOrganizer.response.body.token}}
+
+### Same email twice -> 409 EMAIL_TAKEN
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Ananya Rao",
+  "email": "ananya@example.com",
+  "password": "orchestra-pit-4",
+  "role": "attendee"
+}
+
+### Bad body -> 422 VALIDATION_FAILED with per-field details
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "A",
+  "email": "not-an-email",
+  "password": "short",
+  "role": "admin"
+}
+
+### Log in
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ananya@example.com",
+  "password": "orchestra-pit-4"
+}
+
+### Wrong password -> 401
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ananya@example.com",
+  "password": "wrong-password"
+}
+
+### Who am I
+GET {{host}}/auth/me
+Authorization: Bearer {{attendeeToken}}
+
+### No token -> 401
+GET {{host}}/auth/me
+
+### Garbage token -> 401
+GET {{host}}/auth/me
+Authorization: Bearer not.a.real.token

@@ -16,7 +16,9 @@ export default function Login() {
       await login(email, 'password123');
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Ensure backend is running.');
+      const apiErrMsg = err.response?.data?.error?.message;
+      const dataErrMsg = err.response?.data?.message;
+      setError(apiErrMsg || dataErrMsg || 'Login failed. Ensure backend is running.');
     } finally {
       setLoadingRole(null);
     }
